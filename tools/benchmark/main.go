@@ -7,13 +7,16 @@ import (
 	"os"
 )
 
-const (
-	peerLog = "/home/canhpc/workspace/text/peer1org1.log"
-)
-
 func main() {
-	//open logfile
-	file, err := os.Open(peerLog)
+	if len(os.Args) < 2 {
+		fmt.Println("Err: required input file!")
+		fmt.Println("Usage: bennchmark [fileName]")
+		return
+	}
+
+	var inputFile = os.Args[1]
+	//open input file
+	file, err := os.Open(inputFile)
 	if err != nil {
 		log.Fatal(err)
 	}
