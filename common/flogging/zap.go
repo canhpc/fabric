@@ -9,6 +9,7 @@ package flogging
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -103,3 +104,17 @@ func (f *FabricLogger) WithOptions(opts ...zap.Option) *FabricLogger {
 }
 
 func formatArgs(args []interface{}) string { return strings.TrimSuffix(fmt.Sprintln(args...), "\n") }
+
+//func (f *FabricLogger) InfoBench(key string, value int){
+//		f.s.Infof("BENCHMARK %s:%d END_BENCH", key, value)
+//}
+
+func (f *FabricLogger) InfoBench(keyValues map[string]time.Duration) {
+	strs := []string{}
+	for k, v := range keyValues {
+		strs = append(strs, fmt.Sprintf("%s:%d", k, v))
+	}
+	if len(strs) > 0 {
+		f.s.Infof("BENCHMARK %s END_BENCH", strings.Join(strs, ".."))
+	}
+}

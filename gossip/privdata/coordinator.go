@@ -15,6 +15,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/common/channelconfig"
 	vsccErrors "github.com/hyperledger/fabric/common/errors"
+	"github.com/hyperledger/fabric/common/flogging"
 	util2 "github.com/hyperledger/fabric/common/util"
 	"github.com/hyperledger/fabric/core/committer"
 	"github.com/hyperledger/fabric/core/committer/txvalidator"
@@ -37,6 +38,7 @@ import (
 const pullRetrySleepInterval = time.Second
 
 var logger = util.GetLogger(util.PrivateDataLogger, "")
+var logger2 = flogging.MustGetLogger("gossip.coordinator")
 
 //go:generate mockery -dir ../../core/common/privdata/ -name CollectionStore -case underscore -output mocks/
 //go:generate mockery -dir ../../core/committer/ -name Committer -case underscore -output mocks/
@@ -302,6 +304,9 @@ func (c *coordinator) StoreBlock(block *common.Block, privateDataSets util.PvtDa
 		}
 	}
 
+	logger2.InfoBench(map[string]time.Duration{
+		"StoreBlock": time.Since(validationStart) / time.Microsecond,
+	})
 	c.reportPurgeDuration(time.Since(purgeStart))
 
 	return nil

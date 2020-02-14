@@ -135,6 +135,9 @@ func (e *Endorser) callChaincode(txParams *ccprovider.TransactionParams, version
 	defer func(start time.Time) {
 		logger := endorserLogger.WithOptions(zap.AddCallerSkip(1))
 		elapsedMilliseconds := time.Since(start).Round(time.Millisecond) / time.Millisecond
+		logger.InfoBench(map[string]time.Duration{
+			"callChaincode": time.Since(start) / time.Microsecond,
+		})
 		logger.Infof("[%s][%s] Exit chaincode: %s (%dms)", txParams.ChannelID, shorttxid(txParams.TxID), cid, elapsedMilliseconds)
 	}(time.Now())
 
@@ -444,7 +447,9 @@ func (e *Endorser) ProcessProposal(ctx context.Context, signedProp *pb.SignedPro
 			}
 			e.Metrics.ProposalDuration.With(meterLabels...).Observe(time.Since(startTime).Seconds())
 		}
-
+		endorserLogger.InfoBench(map[string]time.Duration{
+			"ProcessProposal": time.Since(startTime) / time.Microsecond,
+		})
 		endorserLogger.Debug("Exit: request from", addr)
 	}()
 

@@ -428,6 +428,11 @@ func (l *kvLedger) CommitWithPvtData(pvtdataAndBlock *ledger.BlockAndPvtData, co
 		}
 	}
 
+	logger.InfoBench(map[string]time.Duration{
+		"Commit block and private data to storage":    elapsedBlockstorageAndPvtdataCommit / time.Microsecond,
+		"Commit block transactions to state database": elapsedCommitState / time.Microsecond,
+	})
+
 	logger.Infof("[%s] Committed block [%d] with %d transaction(s) in %dms (state_validation=%dms block_and_pvtdata_commit=%dms state_commit=%dms)"+
 		" commitHash=[%x]",
 		l.ledgerID, block.Header.Number, len(block.Data.Data),
@@ -437,6 +442,7 @@ func (l *kvLedger) CommitWithPvtData(pvtdataAndBlock *ledger.BlockAndPvtData, co
 		elapsedCommitState/time.Millisecond,
 		l.commitHash,
 	)
+
 	l.updateBlockStats(
 		elapsedBlockProcessing,
 		elapsedBlockstorageAndPvtdataCommit,
